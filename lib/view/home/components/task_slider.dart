@@ -9,8 +9,8 @@ class TaskSLider extends StatelessWidget {
     List<List<Color>> colorlist = [
       [Colors.blue.shade900, Colors.blue.shade700, Colors.indigoAccent],
       [
-        Color.fromARGB(255, 10, 43, 27),
-        Color.fromARGB(255, 4, 56, 47),
+        const Color.fromARGB(255, 10, 43, 27),
+        const Color.fromARGB(255, 4, 56, 47),
         const Color.fromARGB(255, 205, 2, 2)
       ],
       [
@@ -20,7 +20,7 @@ class TaskSLider extends StatelessWidget {
       ],
       [
         const Color.fromARGB(255, 3, 113, 114),
-        Color.fromARGB(255, 23, 41, 45),
+        const Color.fromARGB(255, 23, 41, 45),
         const Color.fromARGB(255, 3, 99, 118)
       ],
       [

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -19,13 +20,13 @@ class NewsController extends GetxController {
 
   var cardItems = <CardItem>[].obs;
 
+  List<dynamic>? newsData = [];
+
   @override
-
-
-  
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    cardItems.addAll(allCardItems); // Initially display all items
+    cardItems.addAll(allCardItems);
+    fetchTopHeadlines(); // Initially display all items
   }
 
   void searchNews() {
@@ -38,6 +39,29 @@ class NewsController extends GetxController {
               item.title.toLowerCase().contains(query) ||
               item.description.toLowerCase().contains(query))
           .toList());
+    }
+  }
+
+  final Dio _dio = Dio();
+
+  Future<void> fetchTopHeadlines() async {
+    const String url =
+        'https://newsapi.org/v2/top-headlines?country=in&apiKey=1f6ebb672beb4b30a35f6b6779eb6203';
+
+    try {
+      var response = await _dio.get(url);
+
+      if (response.statusCode == 200) {
+        newsData = response.data["articles"];
+        debugPrint(newsData.toString());
+        // The response is already in Map<String, dynamic> format.
+      } else {
+        // Handle the case where the response status is not 200.
+        print('Failed to load top headlines');
+      }
+    } catch (e) {
+      // Handle any exceptions that might occur.
+      print('Error occurred: $e');
     }
   }
 

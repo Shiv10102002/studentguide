@@ -26,7 +26,7 @@ class SignUpScreen extends StatelessWidget {
             child: Column(
               children: [
                 const WelcomeText(
-                  title: "Create Account",
+                  title: "Register Students",
                   text:
                       "Enter your Name,College name, Class, Email and Password for sign up.",
                 ),

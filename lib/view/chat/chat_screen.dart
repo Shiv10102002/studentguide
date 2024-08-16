@@ -18,24 +18,10 @@ class ChatScreen extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const Text('User Name'),
-              Text(
-                'User email',
-                style: Theme.of(context).textTheme.bodySmall,
-              )
-            ],
+          title: Text(
+            "Chat Screen",
+            style: darksemibold16.copyWith(fontSize: 18),
           ),
-          leading: const Padding(
-            padding: EdgeInsets.only(left: defaultPadding * 0.5),
-            child: CircleAvatar(
-              backgroundColor: Colors.grey,
-            ),
-          ),
-          centerTitle: false,
           actions: [
             PopupMenuButton<String>(
               color: primaryColor,
@@ -154,7 +140,6 @@ class ChatScreen extends StatelessWidget {
                       Tab(text: 'Group'),
                       Tab(text: 'Friend'),
                       Tab(text: 'Teacher'),
-                      Tab(text: 'Unread'),
                     ],
                   ),
                 ),
@@ -196,7 +181,6 @@ class ChatScreen extends StatelessWidget {
             const Center(child: Text('Group')),
             const Center(child: Text('Friend')),
             const Center(child: Text('Teacher')),
-            const Center(child: Text('Unread')),
           ],
         ),
       ),

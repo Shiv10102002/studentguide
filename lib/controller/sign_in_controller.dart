@@ -1,77 +1,87 @@
 // import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:studentguide/constant.dart';
 import 'package:studentguide/controller/auth_controller.dart';
+import 'package:studentguide/prefutils.dart';
+import 'package:studentguide/provider/api_provider.dart';
+import 'package:studentguide/view/ParentView/parent_main_screen.dart';
 import 'package:studentguide/view/home/home_screen.dart';
+import 'package:studentguide/view/main_screen/main_screen.dart';
 // import 'home_screen.dart';
 
 class SignInController extends GetxController {
   final _formKey = GlobalKey<FormState>();
+
+  late ApiProvider _apiProvider;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final isLoading = false.obs;
   final _obscureText = true.obs; // Added this line
 
   // final Dio _dio = Dio();
-  final AuthController authController = Get.find<AuthController>();
+  // final AuthController authController = Get.find<AuthController>();
   GlobalKey<FormState> get formKey => _formKey;
 
-  void signIn() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      final email = emailController.text.trim();
-      final password = passwordController.text.trim();
+  final _baseUrl =
+      'https://710d-2409-40e4-2050-aa8e-512-e4dd-1f1b-2b72.ngrok-free.app/';
 
-      if (email.isEmpty || password.isEmpty) {
-        Get.snackbar("Error", "Please fill in all fields");
-        return;
-      }
+  @override
+  void onInit() {
+    super.onInit();
+    _apiProvider = Get.find<ApiProvider>();
+  }
 
-      isLoading.value = true;
-      // try {
-      //   final response = await _dio.post('https://testapi/user/signin', data: {
-      //     'email': email,
-      //     'password': password,
-      //   });
+  Future<void> signIn() async {
+    final email = emailController.value.text;
+    final password = passwordController.value.text;
 
-      //   if (response.statusCode == 200) {
-      //     // Assuming response data contains user information or token
-      //     final data = response.data;
+    debugPrint(email);
+    debugPrint(password);
 
-      //     // Store token or user information in GetStorage
-      //     GetStorage().write('user', data);
+    isLoading.value = true;
+    try {
+      await _apiProvider.SignIn(
+        onSuccess: (res) {
+          // Assuming the response contains these fields
+          final role = res['role'];
+          final name = res['name'];
+          final accessToken = res['accessToken'];
 
-      //     // Navigate to HomeScreen
-      //     Get.offAll(() => const HomeScreen());
-      //   } else {
-      //     Get.snackbar("Error", "Sign in failed");
-      //   }
-      // } catch (e) {
-      //   Get.snackbar("Error", "Sign in failed: ${e.toString()}");
-      // } finally {
-      //   isLoading.value = false;
-      // }
-// temporary auth
-      try {
-        // Simulate API call
-        await Future.delayed(const Duration(seconds: 2));
-        final data = {
-          'email': email,
-          'token': 'dummyToken',
-        };
+          // Store the role, name, email, and access token in shared preferences
+          Get.find<PrefUtils>().setRole(role);
+          Get.find<PrefUtils>().setUsername(name);
+          Get.find<PrefUtils>().setEmailId(email);
+          Get.find<PrefUtils>().setToken(accessToken);
+          Get.find<PrefUtils>().setLoginStatus(true);
 
-        // On successful login
-        authController.login(data);
-
-        // Navigate to HomeScreen
-        Get.offAll(() => const HomeScreen());
-      } catch (e) {
-        Get.snackbar("Error", "Sign in failed: ${e.toString()}");
-      } finally {
-        isLoading.value = false;
-      }
-
-    
+          // Navigate to the appropriate screen based on the role
+          if (role == 'parent') {
+            Get.to(() => ParentMainScreen());
+          } else if (role == 'student') {
+            Get.to(() => MainScreen());
+          } else if (role == 'teacher') {
+            Get.to(() => MainScreen());
+          } else {
+            // Handle other roles or default case
+            Get.snackbar('Error', 'Unknown role: $role',
+                colorText: Colors.white, backgroundColor: primaryColor);
+          }
+        },
+        onError: (err) {
+          throw Exception(err);
+        },
+        reqData: {
+          "email": email,
+          "password": password,
+        },
+      );
+    } catch (e) {
+      debugPrint("Error occurred during sign in: ${e}");
+      Get.snackbar('Error', 'Sign in failed: ${e.toString()}',
+          backgroundColor: primaryColor, colorText: Colors.white);
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -82,9 +92,9 @@ class SignInController extends GetxController {
   bool get obscureText => _obscureText.value; // Getter for _obscureText
   @override
   void onClose() {
-    emailController.dispose();
+    // emailController.dispose();
 
-    passwordController.dispose();
+    // passwordController.dispose();
 
     super.onClose();
   }
